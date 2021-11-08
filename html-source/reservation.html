@@ -127,6 +127,7 @@
         crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.1.4/dist/js/datepicker-full.min.js"></script>
 <script src="https://unpkg.com/notie"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     // Example starter JavaScript for disabling form submissions if there are invalid fields
     (function () {
@@ -157,6 +158,15 @@
         notie.alert({
             type: "Success", // optional, default = 4, enum: [1, 2, 3, 4, 5, 'success', 'warning', 'error', 'info', 'neutral']
             text: msg,
+        })
+    }
+
+    function notifyModal (title, text, icon, confirmationButton){
+        Swal.fire({
+            title: 'title!',
+            text: text,
+            icon: icon,
+            confirmButtonText: confirmationButton
         })
     }
 
