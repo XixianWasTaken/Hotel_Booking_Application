@@ -2,6 +2,7 @@ package render
 
 import (
 	"bytes"
+	"github.com/justinas/nosurf"
 	"html/template"
 	"learningGo/pkd/config"
 	"learningGo/pkd/modules"
@@ -18,12 +19,13 @@ func NewTemplates(a *config.AppConfig) {
 	app = a
 }
 
-func addDefaultData(td *modules.TemplateData) *modules.TemplateData {
+func AddDefaultData(td *modules.TemplateData, r *http.Request) *modules.TemplateData {
+	td.CSRFToken = nosurf.Token(r)
 	return td
 }
 
 // RenderTemplate renders templates using html/template
-func RenderTemplate(w http.ResponseWriter, tmpl string, td *modules.TemplateData) {
+func RenderTemplate(w http.ResponseWriter, tmpl string, td *modules.TemplateData, r *http.Request) {
 
 	var tc map[string]*template.Template
 
@@ -41,10 +43,12 @@ func RenderTemplate(w http.ResponseWriter, tmpl string, td *modules.TemplateData
 
 	buf := new(bytes.Buffer)
 
-	td = addDefaultData(td)
-	_ = t.Execute(buf, td)
-
-	_, err := buf.WriteTo(w)
+	td = AddDefaultData(td, r)
+	err := t.Execute(buf, td)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = buf.WriteTo(w)
 	if err != nil {
 		log.Fatal(err)
 	}
