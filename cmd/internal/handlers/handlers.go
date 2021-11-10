@@ -1,10 +1,12 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
-	"learningGo/pkd/config"
-	"learningGo/pkd/modules"
-	"learningGo/pkd/render"
+	"learningGo/cmd/internal/config"
+	"learningGo/cmd/internal/modules"
+	"learningGo/cmd/internal/render"
+	"log"
 	"net/http"
 )
 
@@ -49,11 +51,11 @@ func (m *Repository) Majors(w http.ResponseWriter, r *http.Request) {
 	render.RenderTemplate(w, "majors.page.tmpl", &modules.TemplateData{}, r)
 }
 
-func (m *Repository) SearchAvailability(w http.ResponseWriter, r *http.Request) {
+func (m *Repository) Availability(w http.ResponseWriter, r *http.Request) {
 	render.RenderTemplate(w, "search-availability.page.tmpl", &modules.TemplateData{}, r)
 }
 
-func (m *Repository) PostSearchAvailability(w http.ResponseWriter, r *http.Request) {
+func (m *Repository) PostAvailability(w http.ResponseWriter, r *http.Request) {
 	start := r.Form.Get("start")
 	end := r.Form.Get("end")
 	fmt.Println(start, end)
@@ -61,6 +63,28 @@ func (m *Repository) PostSearchAvailability(w http.ResponseWriter, r *http.Reque
 	if err != nil {
 		return
 	}
+}
+
+type jsonResp struct {
+	OK      bool   `json:"ok"`
+	Message string `json:"message"`
+}
+
+func (m *Repository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
+	resp := jsonResp{
+		OK:      true,
+		Message: "Available!",
+	}
+
+	out, err := json.MarshalIndent(resp, "", "     ")
+	if err != nil {
+		log.Println(err)
+	}
+
+	log.Println(string(out))
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(out)
+
 }
 
 func (m *Repository) Contact(w http.ResponseWriter, r *http.Request) {

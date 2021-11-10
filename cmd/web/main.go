@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/alexedwards/scs/v2"
-	"learningGo/pkd/config"
-	"learningGo/pkd/handlers"
-	"learningGo/pkd/render"
+	"learningGo/cmd/internal/config"
+	"learningGo/cmd/internal/handlers"
+	"learningGo/cmd/internal/render"
 	"log"
 	"net/http"
 	"time"
