@@ -1,11 +1,10 @@
 .my-footer {
-    padding: 1em;
     height: 5em;
     background-color: #163b65;
     margin-top: 1.5em;
-    color: #ffffff;
-    font-size: large;
-    text-align: center;
+    padding: 1em;
+    color: white;
+    font-size: 80%;
 }
 
 .room-image {
@@ -16,6 +15,11 @@
     box-shadow: none;
 }
 
-.datePicker {
-    z-index: 1000;
+.datepicker {
+    z-index: 10000;
+    size: auto;
+}
+
+.search-form {
+    max-width: 95%;
 }
