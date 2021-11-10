@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"learningGo/cmd/internal/config"
+	"learningGo/cmd/internal/forms"
 	"learningGo/cmd/internal/modules"
 	"learningGo/cmd/internal/render"
 	"log"
@@ -40,7 +41,39 @@ func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Repository) Reservations(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "make-reservation.page.tmpl", &modules.TemplateData{}, r)
+	render.RenderTemplate(w, "make-reservation.page.tmpl", &modules.TemplateData{
+		Form: forms.New(nil),
+	}, r)
+}
+
+//Post reservation handles the posting of a reservation form
+func (m *Repository) PostReservations(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		log.Println(err)
+	}
+
+	revervation := modules.Reservation{
+		FirstName: r.Form.Get("first_name"),
+		LastName:  r.Form.Get("last_name"),
+		Email:     r.Form.Get("email"),
+		Phone:     r.Form.Get("phone"),
+	}
+
+	form := forms.New(r.PostForm)
+	form.Has("first_name", r)
+
+	if !form.Valid() {
+		data := make(map[string]interface{})
+		data["reservation"] = revervation
+
+		render.RenderTemplate(w, "make-reservation.page.tmpl", &modules.TemplateData{
+			Form: form,
+			Data: data,
+		}, r)
+		return
+	}
+
 }
 
 func (m *Repository) Generals(w http.ResponseWriter, r *http.Request) {
