@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/gob"
 	"fmt"
 	"github.com/alexedwards/scs/v2"
 	"learningGo/cmd/internal/config"
 	"learningGo/cmd/internal/handlers"
+	"learningGo/cmd/internal/modules"
 	"learningGo/cmd/internal/render"
 	"log"
 	"net/http"
@@ -18,6 +20,9 @@ var session *scs.SessionManager
 
 //main is the main application
 func main() {
+	//what am i going to put int he session
+	gob.Register(modules.Reservation{})
+
 	//change this to true when in production
 	app.InProduction = false
 
