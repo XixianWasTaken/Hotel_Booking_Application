@@ -9,3 +9,5 @@ This is the repository for my bookinfs and reservations project.
 -Uses [alex edwards SCS](github.com/alexedwards/scs/v2) sessions management
 
 -Uses [Nosurf](github.com/justinas/nosurf)
+
+-Uses [Govalidator](https://github.com/asaskevich/govalidator)
