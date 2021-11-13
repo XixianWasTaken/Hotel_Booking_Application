@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"learningGo/cmd/internal/config"
 	"learningGo/cmd/internal/forms"
-	"learningGo/cmd/internal/modules"
+	modules2 "learningGo/cmd/internal/modules"
 	"learningGo/cmd/internal/render"
 	"log"
 	"net/http"
@@ -32,20 +32,20 @@ func NewHandlers(r *Repository) {
 
 // Home is the home page handler
 func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "home.page.tmpl", &modules.TemplateData{}, r)
+	render.RenderTemplate(w, "home.page.tmpl", &modules2.TemplateData{}, r)
 }
 
 // About is the about page handler
 func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "about.page.tmpl", &modules.TemplateData{}, r)
+	render.RenderTemplate(w, "about.page.tmpl", &modules2.TemplateData{}, r)
 }
 
 func (m *Repository) Reservations(w http.ResponseWriter, r *http.Request) {
-	var emptyReservation modules.Reservation
+	var emptyReservation modules2.Reservation
 	data := make(map[string]interface{})
 	data["reservation"] = emptyReservation
 
-	render.RenderTemplate(w, "make-reservation.page.tmpl", &modules.TemplateData{
+	render.RenderTemplate(w, "make-reservation.page.tmpl", &modules2.TemplateData{
 		Form: forms.New(nil),
 		Data: data,
 	}, r)
@@ -58,7 +58,7 @@ func (m *Repository) PostReservations(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 
-	reservation := modules.Reservation{
+	reservation := modules2.Reservation{
 		FirstName: r.Form.Get("first_name"),
 		LastName:  r.Form.Get("last_name"),
 		Email:     r.Form.Get("email"),
@@ -75,7 +75,7 @@ func (m *Repository) PostReservations(w http.ResponseWriter, r *http.Request) {
 		data := make(map[string]interface{})
 		data["reservation"] = reservation
 
-		render.RenderTemplate(w, "make-reservation.page.tmpl", &modules.TemplateData{
+		render.RenderTemplate(w, "make-reservation.page.tmpl", &modules2.TemplateData{
 			Form: form,
 			Data: data,
 		}, r)
@@ -88,15 +88,15 @@ func (m *Repository) PostReservations(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Repository) Generals(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "generals.page.tmpl", &modules.TemplateData{}, r)
+	render.RenderTemplate(w, "generals.page.tmpl", &modules2.TemplateData{}, r)
 }
 
 func (m *Repository) Majors(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "majors.page.tmpl", &modules.TemplateData{}, r)
+	render.RenderTemplate(w, "majors.page.tmpl", &modules2.TemplateData{}, r)
 }
 
 func (m *Repository) Availability(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "search-availability.page.tmpl", &modules.TemplateData{}, r)
+	render.RenderTemplate(w, "search-availability.page.tmpl", &modules2.TemplateData{}, r)
 }
 
 func (m *Repository) PostAvailability(w http.ResponseWriter, r *http.Request) {
@@ -132,11 +132,11 @@ func (m *Repository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Repository) Contact(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "contact.page.tmpl", &modules.TemplateData{}, r)
+	render.RenderTemplate(w, "contact.page.tmpl", &modules2.TemplateData{}, r)
 }
 
 func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) {
-	reservation, ok := m.App.Session.Get(r.Context(), "reservation").(modules.Reservation)
+	reservation, ok := m.App.Session.Get(r.Context(), "reservation").(modules2.Reservation)
 	if !ok {
 		log.Println("cannot get item from session")
 		m.App.Session.Put(r.Context(), "error", "Can't get reservation from session")
@@ -149,7 +149,7 @@ func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) 
 	data := make(map[string]interface{})
 	data["reservation"] = reservation
 
-	render.RenderTemplate(w, "reservation-summary.page.tmpl", &modules.TemplateData{
+	render.RenderTemplate(w, "reservation-summary.page.tmpl", &modules2.TemplateData{
 		Data: data,
 	}, r)
 }

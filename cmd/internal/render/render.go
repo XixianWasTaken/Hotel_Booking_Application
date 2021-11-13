@@ -2,6 +2,8 @@ package render
 
 import (
 	"bytes"
+	"errors"
+	"fmt"
 	"github.com/justinas/nosurf"
 	"html/template"
 	"learningGo/cmd/internal/config"
@@ -13,8 +15,8 @@ import (
 
 var functions = template.FuncMap{}
 var app *config.AppConfig
+var pathToTemplates = "./templates"
 
-//NewTempaltes sets the config for the tempalte package
 func NewTemplates(a *config.AppConfig) {
 	app = a
 }
@@ -28,7 +30,7 @@ func AddDefaultData(td *modules.TemplateData, r *http.Request) *modules.Template
 }
 
 // RenderTemplate renders templates using html/template
-func RenderTemplate(w http.ResponseWriter, tmpl string, td *modules.TemplateData, r *http.Request) {
+func RenderTemplate(w http.ResponseWriter, tmpl string, td *modules.TemplateData, r *http.Request) error {
 
 	var tc map[string]*template.Template
 
@@ -41,7 +43,8 @@ func RenderTemplate(w http.ResponseWriter, tmpl string, td *modules.TemplateData
 	t, checker := tc[tmpl]
 
 	if !checker {
-		log.Fatal("Could not get the template cache")
+		//log.Fatal("Could not get the template cache")
+		return errors.New("+++++++")
 	}
 
 	buf := new(bytes.Buffer)
@@ -56,12 +59,13 @@ func RenderTemplate(w http.ResponseWriter, tmpl string, td *modules.TemplateData
 		log.Fatal(err)
 	}
 
+	return nil
 }
 
 func CreateTemplateCache() (map[string]*template.Template, error) {
 
 	myCache := map[string]*template.Template{}
-	pages, err := filepath.Glob("./templates/*.page.tmpl")
+	pages, err := filepath.Glob(fmt.Sprintf("%s/*.page.tmpl", pathToTemplates))
 	if err != nil {
 		return myCache, err
 	}
@@ -73,14 +77,14 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 			return myCache, err
 		}
 
-		matches, err := filepath.Glob("./templates/*.layout.tmpl")
+		matches, err := filepath.Glob(fmt.Sprintf("%s/*.layout.tmpl", pathToTemplates))
 
 		if err != nil {
 			return myCache, err
 		}
 
 		if len(matches) > 0 {
-			ts, err = ts.ParseGlob("./templates/*.layout.tmpl")
+			ts, err = ts.ParseGlob(fmt.Sprintf("%s/*.layout.tmpl", pathToTemplates))
 			if err != nil {
 				return myCache, err
 			}

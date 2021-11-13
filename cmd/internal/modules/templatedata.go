@@ -1,8 +1,10 @@
 package modules
 
-import "learningGo/cmd/internal/forms"
+import (
+	"learningGo/cmd/internal/forms"
+)
 
-//TemplateDat hp;ds data sent from handlers to templates
+//TemplateDat has data sent from handlers to templates
 type TemplateData struct {
 	StringMap map[string]string
 	IntData   map[string]int
