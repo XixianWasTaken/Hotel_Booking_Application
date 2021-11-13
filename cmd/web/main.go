@@ -6,10 +6,12 @@ import (
 	"github.com/alexedwards/scs/v2"
 	"learningGo/cmd/internal/config"
 	"learningGo/cmd/internal/handlers"
+	"learningGo/cmd/internal/helpers"
 	"learningGo/cmd/internal/modules"
 	"learningGo/cmd/internal/render"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -17,6 +19,8 @@ const portNumber = ":8080"
 
 var app config.AppConfig
 var session *scs.SessionManager
+var infoLog *log.Logger
+var errorLog *log.Logger
 
 //main is the main application
 func main() {
@@ -47,6 +51,12 @@ func run() error {
 	//change this to true when in production
 	app.InProduction = false
 
+	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	app.InfoLog = infoLog
+
+	errorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	app.ErrorLog = errorLog
+
 	session = scs.New()
 	session.Lifetime = 24 * time.Hour
 	session.Cookie.Persist = true
@@ -67,6 +77,7 @@ func run() error {
 	repo := handlers.NewRepo(&app)
 	handlers.NewHandlers(repo)
 	render.NewTemplates(&app)
+	helpers.NewHelpers(&app)
 
 	return nil
 }

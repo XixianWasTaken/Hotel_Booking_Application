@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"learningGo/cmd/internal/config"
 	"learningGo/cmd/internal/forms"
+	"learningGo/cmd/internal/helpers"
 	modules2 "learningGo/cmd/internal/modules"
 	"learningGo/cmd/internal/render"
 	"log"
@@ -55,7 +56,8 @@ func (m *Repository) Reservations(w http.ResponseWriter, r *http.Request) {
 func (m *Repository) PostReservations(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
-		log.Println(err)
+		helpers.ServerError(w, err)
+		return
 	}
 
 	reservation := modules2.Reservation{
@@ -122,7 +124,8 @@ func (m *Repository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
 
 	out, err := json.MarshalIndent(resp, "", "     ")
 	if err != nil {
-		log.Println(err)
+		helpers.ServerError(w, err)
+		return
 	}
 
 	log.Println(string(out))
@@ -138,6 +141,7 @@ func (m *Repository) Contact(w http.ResponseWriter, r *http.Request) {
 func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) {
 	reservation, ok := m.App.Session.Get(r.Context(), "reservation").(modules2.Reservation)
 	if !ok {
+		m.App.ErrorLog.Println("Can't get error from session")
 		log.Println("cannot get item from session")
 		m.App.Session.Put(r.Context(), "error", "Can't get reservation from session")
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
