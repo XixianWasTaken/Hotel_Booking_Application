@@ -41,7 +41,7 @@ func main() {
 }
 
 func run() error {
-	//what am I going to put int he session
+	//what am I going to put in the session
 	gob.Register(modules.Reservation{})
 
 	//change this to true when in production
@@ -55,7 +55,7 @@ func run() error {
 
 	app.Session = session
 
-	tc, err := render.CreateTemplateTest()
+	tc, err := render.CreateTemplateCache()
 	if err != nil {
 		log.Fatal("Cannot create template cache")
 		return err

@@ -35,7 +35,7 @@ func RenderTemplate(w http.ResponseWriter, tmpl string, td *modules.TemplateData
 	if app.UseCache {
 		tc = app.TemplateCache
 	} else {
-		tc, _ = CreateTemplateTest()
+		tc, _ = CreateTemplateCache()
 	}
 
 	t, checker := tc[tmpl]
@@ -58,7 +58,7 @@ func RenderTemplate(w http.ResponseWriter, tmpl string, td *modules.TemplateData
 
 }
 
-func CreateTemplateTest() (map[string]*template.Template, error) {
+func CreateTemplateCache() (map[string]*template.Template, error) {
 
 	myCache := map[string]*template.Template{}
 	pages, err := filepath.Glob("./templates/*.page.tmpl")
