@@ -4,10 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"learningGo/cmd/internal/config"
+	"learningGo/cmd/internal/driver"
 	"learningGo/cmd/internal/forms"
 	"learningGo/cmd/internal/helpers"
 	modules2 "learningGo/cmd/internal/modules"
 	"learningGo/cmd/internal/render"
+	"learningGo/cmd/internal/repository"
+	"learningGo/cmd/internal/repository/dbrepo"
 	"log"
 	"net/http"
 )
@@ -17,12 +20,14 @@ var Repo *Repository
 
 type Repository struct {
 	App *config.AppConfig
+	DB  repository.DatabaseRepo
 }
 
 //NewRepo  creates a new repository
-func NewRepo(a *config.AppConfig) *Repository {
+func NewRepo(a *config.AppConfig, db *driver.DB) *Repository {
 	return &Repository{
 		App: a,
+		DB:  dbrepo.NewPostgreRepo(db.SQL, a),
 	}
 }
 
