@@ -13,6 +13,8 @@ import (
 	"learningGo/cmd/internal/repository/dbrepo"
 	"log"
 	"net/http"
+	"strconv"
+	"time"
 )
 
 //Repo the repository used by the handlers
@@ -38,12 +40,12 @@ func NewHandlers(r *Repository) {
 
 // Home is the home page handler
 func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "home.page.tmpl", &modules2.TemplateData{}, r)
+	render.Template(w, "home.page.tmpl", &modules2.TemplateData{}, r)
 }
 
 // About is the about page handler
 func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "about.page.tmpl", &modules2.TemplateData{}, r)
+	render.Template(w, "about.page.tmpl", &modules2.TemplateData{}, r)
 }
 
 func (m *Repository) Reservations(w http.ResponseWriter, r *http.Request) {
@@ -51,7 +53,7 @@ func (m *Repository) Reservations(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
 	data["reservation"] = emptyReservation
 
-	render.RenderTemplate(w, "make-reservation.page.tmpl", &modules2.TemplateData{
+	render.Template(w, "make-reservation.page.tmpl", &modules2.TemplateData{
 		Form: forms.New(nil),
 		Data: data,
 	}, r)
@@ -65,11 +67,34 @@ func (m *Repository) PostReservations(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	sd := r.Form.Get("start_date")
+	ed := r.Form.Get("end_date")
+
+	// 2021-01-01 -- 01/02 03:04:05PM '06 -0700
+
+	layout := "2006-01-02"
+	startDate, err := time.Parse(layout, sd)
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+	endDate, err := time.Parse(layout, ed)
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+
+	roomID, err := strconv.Atoi(r.Form.Get("room_id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+
 	reservation := modules2.Reservation{
 		FirstName: r.Form.Get("first_name"),
 		LastName:  r.Form.Get("last_name"),
-		Email:     r.Form.Get("email"),
 		Phone:     r.Form.Get("phone"),
+		Email:     r.Form.Get("email"),
+		StartDate: startDate,
+		EndDate:   endDate,
+		RoomID:    roomID,
 	}
 
 	form := forms.New(r.PostForm)
@@ -82,11 +107,16 @@ func (m *Repository) PostReservations(w http.ResponseWriter, r *http.Request) {
 		data := make(map[string]interface{})
 		data["reservation"] = reservation
 
-		render.RenderTemplate(w, "make-reservation.page.tmpl", &modules2.TemplateData{
+		render.Template(w, "make-reservation.page.tmpl", &modules2.TemplateData{
 			Form: form,
 			Data: data,
 		}, r)
 		return
+	}
+
+	err = m.DB.InsertReservation(reservation)
+	if err != nil {
+		helpers.ServerError(w, err)
 	}
 
 	m.App.Session.Put(r.Context(), "reservation", reservation)
@@ -95,15 +125,15 @@ func (m *Repository) PostReservations(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Repository) Generals(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "generals.page.tmpl", &modules2.TemplateData{}, r)
+	render.Template(w, "generals.page.tmpl", &modules2.TemplateData{}, r)
 }
 
 func (m *Repository) Majors(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "majors.page.tmpl", &modules2.TemplateData{}, r)
+	render.Template(w, "majors.page.tmpl", &modules2.TemplateData{}, r)
 }
 
 func (m *Repository) Availability(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "search-availability.page.tmpl", &modules2.TemplateData{}, r)
+	render.Template(w, "search-availability.page.tmpl", &modules2.TemplateData{}, r)
 }
 
 func (m *Repository) PostAvailability(w http.ResponseWriter, r *http.Request) {
@@ -140,7 +170,7 @@ func (m *Repository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Repository) Contact(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "contact.page.tmpl", &modules2.TemplateData{}, r)
+	render.Template(w, "contact.page.tmpl", &modules2.TemplateData{}, r)
 }
 
 func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) {
@@ -158,7 +188,7 @@ func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) 
 	data := make(map[string]interface{})
 	data["reservation"] = reservation
 
-	render.RenderTemplate(w, "reservation-summary.page.tmpl", &modules2.TemplateData{
+	render.Template(w, "reservation-summary.page.tmpl", &modules2.TemplateData{
 		Data: data,
 	}, r)
 }

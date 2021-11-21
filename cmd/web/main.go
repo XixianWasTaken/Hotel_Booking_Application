@@ -49,6 +49,9 @@ func main() {
 func run() (*driver.DB, error) {
 	//what am I going to put in the session
 	gob.Register(modules.Reservation{})
+	gob.Register(modules.User{})
+	gob.Register(modules.Room{})
+	gob.Register(modules.Restrictions{})
 
 	//change this to true when in production
 	app.InProduction = false
@@ -69,7 +72,7 @@ func run() (*driver.DB, error) {
 
 	//connect to database
 	log.Println("Connecting to database....")
-	db, err := driver.ConnectSQL("host = localhost port = 5432 dbname = test_connect user = postgres password = 123456")
+	db, err := driver.ConnectSQL("host = localhost port = 5432 dbname = bookings user = postgres password = 123456")
 	if err != nil {
 		log.Fatal("Cannot connect to database!")
 	}
@@ -87,7 +90,7 @@ func run() (*driver.DB, error) {
 
 	repo := handlers.NewRepo(&app, db)
 	handlers.NewHandlers(repo)
-	render.NewTemplates(&app)
+	render.NewRenderer(&app)
 	helpers.NewHelpers(&app)
 
 	return db, nil
