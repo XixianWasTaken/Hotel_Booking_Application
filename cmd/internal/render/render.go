@@ -30,7 +30,7 @@ func AddDefaultData(td *modules.TemplateData, r *http.Request) *modules.Template
 }
 
 // Template renders templates using html/template
-func Template(w http.ResponseWriter, tmpl string, td *modules.TemplateData, r *http.Request) error {
+func Template(w http.ResponseWriter, r *http.Request, tmpl string, td *modules.TemplateData) error {
 
 	var tc map[string]*template.Template
 
