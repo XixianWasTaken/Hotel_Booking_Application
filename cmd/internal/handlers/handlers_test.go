@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"learningGo/cmd/internal/modules"
 	"log"
@@ -279,6 +280,38 @@ func TestRepository_PostReservations(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 	if rr.Code != http.StatusTemporaryRedirect {
 		t.Errorf("PostReservation handler failed when trying to fail inserting reservation got:%d, wanted:%d", rr.Code, http.StatusTemporaryRedirect)
+	}
+}
+
+func TestRepository_AvailabilityJSON(t *testing.T) {
+	//first case - room not available
+	reqBody := "start=2050-01-01"
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "end=2050-01-01")
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "room_id=1")
+
+	//create request
+	req, _ := http.NewRequest("POST", "/search-availability-json", strings.NewReader(reqBody))
+
+	//get context with session
+	ctx := getCtx(req)
+	req = req.WithContext(ctx)
+
+	//set the request header
+	req.Header.Set("Content-Tyoe", "x-www-form-urlencoded")
+
+	//make handler heandlerfunc
+	handler := http.HandlerFunc(Repo.AvailabilityJSON)
+
+	//get response recorder
+	rr := httptest.NewRecorder()
+
+	//make request to our hadnler
+	handler.ServeHTTP(rr, req)
+
+	var j jsonResp
+	err := json.Unmarshal([]byte(rr.Body.String()), &j)
+	if err != nil {
+		t.Error("failed to parse json")
 	}
 }
 
