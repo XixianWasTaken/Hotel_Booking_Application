@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/alexedwards/scs/v2"
 	"html/template"
+	"learningGo/cmd/internal/modules"
 	"log"
 )
 
@@ -14,4 +15,5 @@ type AppConfig struct {
 	ErrorLog      *log.Logger
 	InProduction  bool
 	Session       *scs.SessionManager
+	MailChan      chan modules.MailData
 }

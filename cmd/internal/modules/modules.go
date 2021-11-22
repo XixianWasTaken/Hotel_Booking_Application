@@ -1,6 +1,8 @@
 package modules
 
-import "time"
+import (
+	"time"
+)
 
 //User is the user module
 type User struct {
@@ -56,4 +58,12 @@ type RoomRestriction struct {
 	Room           Room
 	Reservation    Reservation
 	Restriction    Restrictions
+}
+
+type MailData struct {
+	To       string
+	From     string
+	Subject  string
+	Content  string
+	Template string
 }
