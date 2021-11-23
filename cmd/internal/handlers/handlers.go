@@ -6,6 +6,7 @@ import (
 	"learningGo/cmd/internal/config"
 	"learningGo/cmd/internal/driver"
 	"learningGo/cmd/internal/forms"
+	"learningGo/cmd/internal/helpers"
 	"learningGo/cmd/internal/modules"
 	"learningGo/cmd/internal/render"
 	"learningGo/cmd/internal/repository"
@@ -171,6 +172,7 @@ func (m *Repository) PostReservations(w http.ResponseWriter, r *http.Request) {
 
 	err = m.DB.InsertRoomRestriction(restriction)
 	if err != nil {
+		log.Println(err)
 		m.App.Session.Put(r.Context(), "error", "can't insert room restriction!")
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
@@ -476,11 +478,32 @@ func (m *Repository) AdminDashBoard(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Repository) AdminNewReservations(w http.ResponseWriter, r *http.Request) {
-	render.Template(w, r, "admin-new-reservations.page.tmpl", &modules.TemplateData{})
+	reservations, err := m.DB.AllNewReservations()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	data := make(map[string]interface{})
+	data["reservations"] = reservations
+	render.Template(w, r, "admin-new-reservations.page.tmpl", &modules.TemplateData{
+		Data: data,
+	})
 }
 
 func (m *Repository) AdminAllReservations(w http.ResponseWriter, r *http.Request) {
-	render.Template(w, r, "admin-all-reservations.page.tmpl", &modules.TemplateData{})
+	reservations, err := m.DB.AllReservations()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	data := make(map[string]interface{})
+	data["reservations"] = reservations
+
+	render.Template(w, r, "admin-all-reservations.page.tmpl", &modules.TemplateData{
+		Data: data,
+	})
 }
 
 func (m *Repository) AdminAllReservationsCalendar(w http.ResponseWriter, r *http.Request) {
