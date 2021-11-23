@@ -169,6 +169,7 @@ func (m *PostgreDBRepo) UpdateUser(u modules.User) error {
 	_, err := m.DB.ExecContext(ctx, query,
 		u.FirstName,
 		u.LastName,
+		u.Email,
 		u.AccessLevel,
 		time.Now(),
 	)

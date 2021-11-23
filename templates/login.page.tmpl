@@ -6,7 +6,9 @@
         <div class = "row">
             <div class="col">
                 <h1>Login</h1>
-                <form>
+
+                <form method="post" action="/user/login" novalidate>
+                    <input type ="hidden" name = "csrf_token" value = "{{.CSRFToken}}">
                     <div class="form-group mt-3">
                         <label for="email">Email</label>
                         {{with.Form.Errors.Get "email"}}
@@ -18,13 +20,13 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="Password">Password</label>
-                        {{with.Form.Errors.Get "Password"}}
+                        <label for="password">Password</label>
+                        {{with.Form.Errors.Get "password"}}
                             <label class ="text-danger">{{.}}</label>
                         {{end}}
-                        <input class="form-control {{with .Form.Errors.Get "Password"}} is-invalid {{end}}"
-                               id="Password" autocomplete="off" type='password'
-                               name='Password' value="" required>
+                        <input class="form-control {{with .Form.Errors.Get "password"}} is-invalid {{end}}"
+                               id="password" autocomplete="off" type='password'
+                               name='password' value="" required>
                     </div>
                     <hr>
                     <input type = "submit" class = "btn btn-primary" value="Submit">
