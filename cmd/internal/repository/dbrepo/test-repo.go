@@ -102,3 +102,17 @@ func (m *testDBRepo) GetRoomByID(id int) (modules.Room, error) {
 	}
 	return room, nil
 }
+
+func (m *testDBRepo) GetUserByID(id int) (modules.User, error) {
+	var user modules.User
+	return user, nil
+}
+
+func (m *testDBRepo) UpdateUser(u modules.User) error {
+
+	return nil
+}
+
+func (m *testDBRepo) Authenticate(email, testPassword string) (int, string, error) {
+	return 1, "", nil
+}

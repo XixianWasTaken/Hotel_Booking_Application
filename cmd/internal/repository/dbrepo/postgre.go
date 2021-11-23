@@ -2,6 +2,8 @@ package dbrepo
 
 import (
 	"context"
+	"errors"
+	"golang.org/x/crypto/bcrypt"
 	"learningGo/cmd/internal/modules"
 	"time"
 )
@@ -128,4 +130,74 @@ func (m *PostgreDBRepo) GetRoomByID(id int) (modules.Room, error) {
 	}
 
 	return room, nil
+}
+
+//GetUserByID return user by id
+func (m *PostgreDBRepo) GetUserByID(id int) (modules.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := "select id , first_name, last_name, email, password, access_level, created_at, updated_at from users where id = $1"
+
+	row := m.DB.QueryRowContext(ctx, query, id)
+
+	var u modules.User
+	err := row.Scan(
+		&u.ID,
+		&u.FirstName,
+		&u.LastName,
+		&u.Email,
+		&u.Password,
+		&u.AccessLevel,
+		&u.CreatedAt,
+		&u.UpdatedAt,
+	)
+
+	if err != nil {
+		return u, err
+	}
+	return u, nil
+}
+
+//UpdateUser update user info
+func (m *PostgreDBRepo) UpdateUser(u modules.User) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := "update users set first_name = $1, last_name = $2, email = $3, access_level = $4, updated_at = $5"
+
+	_, err := m.DB.ExecContext(ctx, query,
+		u.FirstName,
+		u.LastName,
+		u.AccessLevel,
+		time.Now(),
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+//Authenticate the user
+func (m *PostgreDBRepo) Authenticate(email, testPassword string) (int, string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var id int
+	var hashedPassword string
+
+	row := m.DB.QueryRowContext(ctx, "select id ,password from users where email = $1", email)
+	err := row.Scan(&id, &hashedPassword)
+	if err != nil {
+		return id, "", err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(testPassword))
+	if err == bcrypt.ErrMismatchedHashAndPassword {
+		return 0, "", errors.New("incorrect password")
+	} else if err != nil {
+		return 0, "", err
+	}
+
+	return id, hashedPassword, nil
 }
