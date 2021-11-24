@@ -21,4 +21,8 @@ type DatabaseRepo interface {
 	AllNewReservations() ([]modules.Reservation, error)
 
 	GetReservationByID(id int) (modules.Reservation, error)
+
+	UpdateReservation(u modules.Reservation) error
+	DeleteReservation(id int) error
+	UpdateProcessed(id, processed int) error
 }

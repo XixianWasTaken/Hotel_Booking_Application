@@ -136,3 +136,15 @@ func (m *testDBRepo) GetReservationByID(id int) (modules.Reservation, error) {
 	var res modules.Reservation
 	return res, nil
 }
+
+func (m *testDBRepo) UpdateReservation(u modules.Reservation) error {
+	return nil
+}
+
+func (m *testDBRepo) DeleteReservation(id int) error {
+	return nil
+}
+
+func (m *testDBRepo) UpdateProcessed(id, processed int) error {
+	return nil
+}
