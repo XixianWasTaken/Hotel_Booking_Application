@@ -465,7 +465,6 @@ func (m *Repository) PostShowLogin(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-//log out
 func (m *Repository) Logout(w http.ResponseWriter, r *http.Request) {
 	_ = m.App.Session.Destroy(r.Context())
 	_ = m.App.Session.RenewToken(r.Context())
@@ -507,14 +506,14 @@ func (m *Repository) AdminAllReservations(w http.ResponseWriter, r *http.Request
 }
 
 func (m *Repository) AdminShowReservation(w http.ResponseWriter, r *http.Request) {
-	exlpoded := strings.Split(r.RequestURI, "/")
-	id, err := strconv.Atoi(exlpoded[4])
+	exploded := strings.Split(r.RequestURI, "/")
+	id, err := strconv.Atoi(exploded[4])
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
 	}
 
-	src := exlpoded[3]
+	src := exploded[3]
 
 	stringMap := make(map[string]string)
 	stringMap["src"] = src
@@ -529,9 +528,50 @@ func (m *Repository) AdminShowReservation(w http.ResponseWriter, r *http.Request
 	data["reservation"] = res
 
 	render.Template(w, r, "admin-reservations-show.page.tmpl", &modules.TemplateData{
-		Data: data,
-		Form: forms.New(nil),
+		StringMap: stringMap,
+		Data:      data,
+		Form:      forms.New(nil),
 	})
+}
+
+func (m *Repository) AdminPostShowReservation(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	exploded := strings.Split(r.RequestURI, "/")
+	id, err := strconv.Atoi(exploded[4])
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	src := exploded[3]
+
+	stringMap := make(map[string]string)
+	stringMap["src"] = src
+
+	res, err := m.DB.GetReservationByID(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	res.FirstName = r.Form.Get("first_name")
+	res.LastName = r.Form.Get("last_name")
+	res.Email = r.Form.Get("email")
+	res.Phone = r.Form.Get("phone")
+
+	err = m.DB.UpdateReservation(res)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	m.App.Session.Put(r.Context(), "flash", "Changed saved")
+	http.Redirect(w, r, fmt.Sprintf("/admin/reservations-%s", src), http.StatusSeeOther)
 }
 
 func (m *Repository) AdminAllReservationsCalendar(w http.ResponseWriter, r *http.Request) {
