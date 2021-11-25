@@ -400,3 +400,39 @@ func (m *PostgreDBRepo) AllRooms() ([]modules.Room, error) {
 
 	return rooms, nil
 }
+
+func (m *PostgreDBRepo) GetRestrictionsForRoomByDate(roomID int, start, end time.Time) ([]modules.RoomRestriction, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var restrictions []modules.RoomRestriction
+
+	query := "select id, coalesce(reservation_id,0), restriction_id, room_id, start_date, end_date from room_restrictions where $1 < end_date and $2 >= start_date and room_id =$3"
+
+	rows, err := m.DB.QueryContext(ctx, query, start, end, roomID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var r modules.RoomRestriction
+		err := rows.Scan(
+			&r.ID,
+			&r.ReservationsID,
+			&r.RestrictionID,
+			&r.RoomID,
+			&r.StartDate,
+			&r.EndDate,
+		)
+		if err != nil {
+			return nil, err
+		}
+		restrictions = append(restrictions, r)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return restrictions, nil
+}
