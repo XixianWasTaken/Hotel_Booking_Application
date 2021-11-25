@@ -25,4 +25,6 @@ type DatabaseRepo interface {
 	UpdateReservation(u modules.Reservation) error
 	DeleteReservation(id int) error
 	UpdateProcessed(id, processed int) error
+
+	AllRooms() ([]modules.Room, error)
 }
