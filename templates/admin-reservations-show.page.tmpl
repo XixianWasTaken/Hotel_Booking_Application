@@ -16,13 +16,13 @@
         </p>
 
 
-        <form action = "/admin/reservations/{{$src}}/{{$res.ID}}" method="post"  class="" novalidate>
-            <input type ="hidden" name = "csrf_token" value = "{{.CSRFToken}}">
+        <form action="/admin/reservations/{{$src}}/{{$res.ID}}" method="post" class="" novalidate>
+            <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
 
             <div class="form-group mt-3">
                 <label for="first_name">First Name:</label>
                 {{with.Form.Errors.Get "first_name"}}
-                    <label class ="text-danger">{{.}}</label>
+                    <label class="text-danger">{{.}}</label>
                 {{end}}
                 <input class="form-control {{with .Form.Errors.Get "first_name"}} is-invalid {{end}}"
                        id="first_name" autocomplete="off" type='text'
@@ -32,7 +32,7 @@
             <div class="form-group">
                 <label for="last_name">Last Name:</label>
                 {{with.Form.Errors.Get "last_name"}}
-                    <label class ="text-danger">{{.}}</label>
+                    <label class="text-danger">{{.}}</label>
                 {{end}}
                 <input class="form-control {{with .Form.Errors.Get "last_name"}} is-invalid {{end}}"
                        id="last_name" autocomplete="off" type='text'
@@ -40,12 +40,12 @@
             </div>
 
 
-            <input type = "hidden" name = "room_id" value = "1">
+            <input type="hidden" name="room_id" value="1">
 
             <div class="form-group">
                 <label for="email">Email:</label>
                 {{with.Form.Errors.Get "email"}}
-                    <label class ="text-danger">{{.}}</label>
+                    <label class="text-danger">{{.}}</label>
                 {{end}}
                 <input class="form-control {{with .Form.Errors.Get "email"}} is-invalid {{end}}" id="email"
                        autocomplete="off" type='email'
@@ -54,7 +54,7 @@
 
             <div class="form-group">
                 {{with.Form.Errors.Get "phone"}}
-                    <label class ="text-danger">{{.}}</label>
+                    <label class="text-danger">{{.}}</label>
                 {{end}}
                 <label for="phone">Phone:</label>
                 <input class="form-control {{with .Form.Errors.Get "phone"}} is-invalid {{end}}" id="phone"
@@ -63,10 +63,18 @@
             </div>
 
             <hr>
+            <div class="float-left">
+                <input type="submit" class="btn btn-primary" value="Save">
+                <a href="/admin/reservations-{{$src}}" class="btn btn-warning">Cancel</a>
+                <a href="#!" class="btn btn-info" onclick="processRes({{$res.ID}})">Mark as Processed</a>
+            </div>
 
-            <input type="submit" class="btn btn-primary" value="Save">
-            <a href="/admin/reservations-{{$src}}" class = "btn btn-warning">Cancel</a>
-            <a href="#!" class = "btn btn-info" onclick="processRes({{$res.ID}})">Mark as Processed</a>
+
+            <div class ="float-right">
+                <a href="#!" class="btn btn-danger" onclick="deleteRes({{$res.ID}})">Delete</a>
+            </div>
+            <div class = "clearfix"></div>
+
         </form>
     </div>
 {{end}}
@@ -78,9 +86,21 @@
             attention.custom({
                 icon: "warning",
                 msg: "Are you sure?",
-                callback: function (result){
-                    if (result !== false){
-                        window.location.href ="/admin/process-reservation/{{$src}}/" + id;
+                callback: function (result) {
+                    if (result !== false) {
+                        window.location.href = "/admin/process-reservation/{{$src}}/" + id;
+                    }
+                }
+            })
+        }
+
+        function deleteRes(id) {
+            attention.custom({
+                icon: "warning",
+                msg: "Are you sure?",
+                callback: function (result) {
+                    if (result !== false) {
+                        window.location.href = "/admin/delete-reservation/{{$src}}/" + id;
                     }
                 }
             })
