@@ -73,7 +73,7 @@
                     <a href="/admin/reservations-{{$src}}" class="btn btn-warning">Cancel</a>
                 {{end}}
                 {{if eq $res.Processed 0}}
-                <a href="#!" class="btn btn-info" onclick="processRes({{$res.ID}})">Mark as Processed</a>
+                    <a href="#!" class="btn btn-info" onclick="processRes({{$res.ID}})">Mark as Processed</a>
                 {{end}}
             </div>
 
