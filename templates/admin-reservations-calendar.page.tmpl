@@ -31,6 +31,9 @@
 
         <form method="post" action="/admin/reservations-calendar">
             <input type = "hidden" name = "csrf_token" value="{{.CSRFToken}}">
+            <input type = "hidden" name = "m" value="{{index .StringMap "this_month"}}">
+            <input type = "hidden" name = "y" value="{{index .StringMap "this_month_year"}}">
+
         {{range $rooms}}
             {{$roomID := .ID}}
             {{$blocks := index $.Data (printf "block_map_%d" .ID)}}
