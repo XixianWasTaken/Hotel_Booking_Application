@@ -1,6 +1,8 @@
 # Bookings and Reservations
 
-This is the repository for my bookinfs and reservations project.
+This is the repository for my bookings and reservations project.
+
+-Use Javscript as front end and golang as backend and PostgreSQL as database
 
 -Build in Golang version 1.17
 
